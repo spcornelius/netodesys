@@ -87,11 +87,11 @@ class Dynamical(object, metaclass=abc.ABCMeta):
 class TermwiseDynamical(Dynamical):
 
     @abc.abstractmethod
-    def R(self, x_i):
+    def R(self, i, x_i):
         pass
 
     @abc.abstractmethod
-    def Q(self, x_i, x_j):
+    def Q(self, i, x_i, j, x_j):
         pass
 
     def dep_exprs(self):
