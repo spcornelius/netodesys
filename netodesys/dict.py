@@ -1,13 +1,16 @@
 from indexed import IndexedOrderedDict
-from abc import ABCMeta
-from collections.abc import MutableMapping
+from paramnet.dict import node_attr_dict_factory, edge_attr_dict_factory
 
 __all__ = ['make_dict_factories']
 
-_mutating_methods = {'__setitem__', '__delitem__', 'pop', 'popitem', 'clear', 'update'}
+_mutating_methods = {'__setitem__', '__delitem__', 'pop', 'popitem', 'clear',
+                     'update'}
 
 
 def make_dict_factories(net):
+    # get base classes for attr dicts from paramnet
+    NAD = node_attr_dict_factory(net._node_params)
+    EAD = edge_attr_dict_factory(net._edge_params)
 
     def modifies_dynamics(method):
         def wrapped(self, *args, **kwargs):
@@ -37,13 +40,13 @@ def make_dict_factories(net):
                 value = self._value_cls(value)
             super().__setitem__(key, value)
 
-    class NodeAttrDict(DictBase, dict):
+    class NodeAttrDict(DictBase, NAD):
         _value_cls = None
 
     class NodeDict(DictBase, IndexedOrderedDict):
         _value_cls = NodeAttrDict
 
-    class EdgeAttrDict(DictBase, dict):
+    class EdgeAttrDict(DictBase, EAD):
         _value_cls = None
 
     class AdjlistOuterDict(DictBase, dict):
@@ -52,4 +55,5 @@ def make_dict_factories(net):
     class AdjlistInnerDict(DictBase, dict):
         _value_cls = AdjlistOuterDict
 
-    return NodeDict, NodeAttrDict, AdjlistOuterDict, AdjlistInnerDict, EdgeAttrDict
+    return NodeDict, NodeAttrDict, AdjlistOuterDict, \
+           AdjlistInnerDict, EdgeAttrDict
