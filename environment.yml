@@ -1,0 +1,22 @@
+name: netodesys
+channels:
+  - conda-forge
+  - defaults
+dependencies:
+  - clang_osx-64
+  - clangxx_osx-64
+  - python >= 3.6
+  - networkx >= 2.0
+  - sundials <= 4.0.2
+  - boost
+  - llvm-openmp
+  - suitesparse
+  - gsl
+  - numpy
+  - scipy
+  - pytest
+  - pip:
+      - ipdb
+      - paramnet >= 1.2.0
+      - bumpversion
+      - pyodesys[all]
