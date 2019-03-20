@@ -1,8 +1,8 @@
 from itertools import product
-from wurlitzer import pipes
 
 import numpy as np
 import pytest
+from wurlitzer import pipes
 
 from .systems import NodewiseLVNet, VarwiseLVNet, \
     TermwiseLVNet
@@ -93,6 +93,7 @@ def test_integration_lv(cls, integrator, use_native, adaptive):
     else:
         t_out = np.linspace(0, t_max, 1000)
     with pipes() as (out, err):
-        res = net.integrate(t_out, x0, rtol=1.0e-8, atol=1.0e-8, nsteps=10 ** 8)
+        res = net.integrate(t_out, x0, rtol=1.0e-8, atol=1.0e-8,
+                            nsteps=10 ** 8)
     xf = res.yout[-1]
     assert np.allclose(xf, [0.95, 0.5, 0.5])

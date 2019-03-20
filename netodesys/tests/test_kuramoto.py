@@ -1,8 +1,8 @@
 from itertools import product
-from wurlitzer import pipes
 
 import numpy as np
 import pytest
+from wurlitzer import pipes
 
 from .systems import NodewiseKuramotoNet, VarwiseKuramotoNet, \
     TermwiseKuramotoNet

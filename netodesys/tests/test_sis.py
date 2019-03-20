@@ -1,14 +1,16 @@
 from itertools import product
-from wurlitzer import pipes
 
 import numpy as np
 import pytest
+from wurlitzer import pipes
 
 from .systems.sis import NodewiseSISNet, VarwiseSISNet, TermwiseSISNet
 from .util import exprs_equal, check_combo, integrators, ChangesDynamics
 
 classes = [NodewiseSISNet, VarwiseSISNet, TermwiseSISNet]
-#classes = [NodewiseSISNet]
+
+
+# classes = [NodewiseSISNet]
 
 
 @pytest.mark.parametrize("cls", classes)
@@ -30,7 +32,7 @@ def test_updates(cls):
         net.add_node(0, a=0.1, b=0.05)
 
     with ChangesDynamics(net):
-        net.add_nodes_from([1,2,3], a=0.1, b=0.05)
+        net.add_nodes_from([1, 2, 3], a=0.1, b=0.05)
 
     with ChangesDynamics(net):
         net.add_edges_from([(0, 1), (3, 2)])
@@ -86,7 +88,7 @@ def test_integration_lv(cls, integrator, use_native, adaptive):
 
     net.add_edge(0, 1, weight=0.01)
 
-    x0 = 1000.0*np.ones(2*len(net))
+    x0 = 1000.0 * np.ones(2 * len(net))
     t_max = 1000.0
 
     if adaptive:
@@ -97,4 +99,3 @@ def test_integration_lv(cls, integrator, use_native, adaptive):
         res = net.integrate(t_out, x0, rtol=1.0e-8, atol=1.0e-8,
                             nsteps=10 ** 8)
     assert np.allclose(res.yout[-1, 0], 500.0)
-

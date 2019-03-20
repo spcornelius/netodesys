@@ -1,9 +1,7 @@
-import sympy as sym
 import pytest
-from collections import OrderedDict
+import sympy as sym
 
 __all__ = ['exprs_equal', 'check_combo', 'integrators', 'ChangesDynamics']
-
 
 integrators = ['cvode', 'gsl', 'scipy', 'odeint']
 
@@ -33,4 +31,3 @@ class ChangesDynamics(object):
         assert self.net.stale_dynamics
         self.net.update_dynamics()
         assert not self.net.stale_dynamics
-

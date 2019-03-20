@@ -24,7 +24,8 @@ class NodewiseLVNet(LVMixin, Dynamical, nx.DiGraph, node_params=['r', 'K']):
         x = self.x
         for u in self:
             eq = self.r[u] * x[u] * (1 - x[u] / self.K[u])
-            eq += sum(self.e * self.A[u, v] * x[u] * x[v] for v in self.successors(u))
+            eq += sum(self.e * self.A[u, v] * x[u] * x[v] for v in
+                      self.successors(u))
             eq -= sum(self.A[v, u] * x[u] * x[v] for v in self.predecessors(u))
             yield u, eq
 

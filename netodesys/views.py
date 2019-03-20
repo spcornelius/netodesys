@@ -5,9 +5,7 @@ from itertools import product
 __all__ = []
 
 __all__.extend([
-    'VarView',
-    'ExprView',
-    'ResultView'
+    'VarView'
 ])
 
 # delegate certain magic methods to numpy
@@ -47,7 +45,11 @@ class ViewMeta(type):
 
 
 class View(object, metaclass=ViewMeta):
-    pass
+
+    def __init__(self, net, nodes, vars):
+        self._net = net
+        self._nodes = nodes
+        self._vars = vars
 
 
 class VarView(View):
