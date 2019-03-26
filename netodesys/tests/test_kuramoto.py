@@ -16,7 +16,7 @@ twopi = 2 * np.pi
 def test_definition(cls):
     net = cls()
 
-    assert hasattr(net, 'x')
+    assert hasattr(net, 'y')
     assert hasattr(net, 'A')
 
 

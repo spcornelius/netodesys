@@ -72,6 +72,10 @@ class Dynamical(Parametrized, is_abstract=True, metaclass=abc.ABCMeta):
         self._stale_dynamics = True
 
     @property
+    def t(self):
+        return sym.Symbol('t')
+
+    @property
     def vars(self):
         return self._vars
 
@@ -93,23 +97,39 @@ class Dynamical(Parametrized, is_abstract=True, metaclass=abc.ABCMeta):
     def rhs(self):
         pass
 
+    @uses_dynamics
+    def f(self, t, y):
+        sys = self.native_sys if self.use_native else self.sys
+        return sys.f_cb(t, y)
+
+    @uses_dynamics
+    def jac(self, t, y):
+        sys = self.native_sys if self.use_native else self.sys
+        return sys.j_cb(t, y)
+
+    @uses_dynamics
+    def jtimes(self, t, y, v):
+        sys = self.native_sys if self.use_native else self.sys
+        return sys.jtimes_cb(t, y, v)
+
     def update_dynamics(self):
         eqs = dict(self.rhs())
-        vars = [getattr(self, v) for v in self.vars]
-        if all(k in self for k in eqs):
+        keys = set(eqs.keys())
+        symvars = [getattr(self, v) for v in self.vars]
+        if keys <= set(self.nodes):
             # by node
-            dep = flatten(zip(*vars))
+            dep = flatten(zip(*symvars))
             expr = flatten(sym.Matrix([eqs[node] for node in self]))
-        elif all(k in self.vars for k in eqs):
+        elif keys <= set(self.vars):
             # by variable
-            dep = it.chain.from_iterable(vars)
+            dep = it.chain.from_iterable(symvars)
             expr = flatten(sym.Matrix([eqs[v] for v in self.vars]))
         else:
             raise ValueError(
                 "rhs must map either nodes to rhs or variables to rhs")
 
         dep_expr = [(d, e + Zero()) for d, e in zip(dep, expr)]
-        self._sys = SymbolicSys(dep_expr)
+        self._sys = SymbolicSys(dep_expr, self.t)
         if self.use_native:
             self._native_sys = native_sys[self.integrator].from_other(
                 self._sys)
@@ -121,5 +141,6 @@ class Dynamical(Parametrized, is_abstract=True, metaclass=abc.ABCMeta):
         if self.use_native:
             return self._native_sys.integrate(*args, **kwargs)
         else:
-            return self._sys.integrate(integrator=self.integrator, *args,
-                                       **kwargs)
+            kw = dict(integrator=self.integrator)
+            kw.update(kwargs)
+            return self._sys.integrate(*args, **kw)

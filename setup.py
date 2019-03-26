@@ -9,7 +9,7 @@ license = 'MIT'
 version = '0.1.0'
 
 tests = ['netodesys.tests']
-tests_require = ['pytest>=2.9.2']
+tests_require = ['pytest>=2.9.2', 'wurlitzer', 'numpy']
 
 extras_req = {
     'testing': ['pytest', 'pytest-cov', 'pytest-flakes', 'pytest-pep8',
@@ -41,5 +41,5 @@ if __name__ == '__main__':
         packages=[pkg_name],
         install_requires=['networkx>=2.0', 'pyodesys', 'paramnet>=1.2.0'],
         extras_require=extras_req,
-        python_requires='>=3.7',
+        python_requires='>=3.6',
         classifiers=classifiers)

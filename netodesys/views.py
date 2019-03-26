@@ -1,6 +1,7 @@
-import sympy as sym
+import abc
+
 import numpy as np
-from itertools import product
+import sympy as sym
 
 __all__ = []
 
@@ -10,8 +11,8 @@ __all__.extend([
 
 # delegate certain magic methods to numpy
 _delegated_mms = ['add', 'contains', 'copy', 'deepcopy', 'eq',
-                  'ge', 'gt', 'index', 'le',  'lt', 'matmul',
-                  'mul', 'ne', 'neg',  'pos', 'pow', 'radd', 'reduce',
+                  'ge', 'gt', 'index', 'le', 'lt', 'matmul',
+                  'mul', 'ne', 'neg', 'pos', 'pow', 'radd', 'reduce',
                   'reduce_ex', 'repr', 'rmatmul', 'rmul', 'rpow', 'rsub',
                   'rtruediv', 'sizeof', 'str', 'sub', 'truediv']
 
@@ -35,7 +36,7 @@ def reshape(items, net):
         return items.T.reshape((m, n, -1))
 
 
-class ViewMeta(type):
+class ViewMeta(abc.ABCMeta):
 
     def __init__(cls, name, bases, attrs):
         super().__init__(name, bases, attrs)
@@ -46,10 +47,14 @@ class ViewMeta(type):
 
 class View(object, metaclass=ViewMeta):
 
-    def __init__(self, net, nodes, vars):
-        self._net = net
-        self._nodes = nodes
-        self._vars = vars
+    @abc.abstractmethod
+    def __getitem__(self, item):
+        pass
+
+    @property
+    @abc.abstractmethod
+    def array(self):
+        pass
 
 
 class VarView(View):
@@ -79,4 +84,3 @@ class VarView(View):
     @property
     def array(self):
         return sym.symarray(self._var_name, len(self._net))
-
