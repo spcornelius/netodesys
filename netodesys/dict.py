@@ -38,6 +38,7 @@ class DictMeta(abc.ABCMeta):
 
 class Dict(MutableMapping, metaclass=DictMeta):
     """ base nested dictionary class that tracks changes """
+    _child_cls = None
 
     def __init__(self, data=None, instance=None):
         self._data = data
@@ -45,7 +46,7 @@ class Dict(MutableMapping, metaclass=DictMeta):
 
     def __setitem__(self, key, value):
         if isinstance(value, MutableMapping) and self._child_cls is not None:
-            value = self.__class__(data=value, instance=self._instance)
+            value = self._child_cls(data=value, instance=self._instance)
         self._data[key] = value
 
     def __getitem__(self, key):
@@ -65,7 +66,7 @@ class Dict(MutableMapping, metaclass=DictMeta):
 
 
 class AttrDict(Dict):
-    _child_cls = None
+    pass
 
 
 class OuterDict(Dict):
