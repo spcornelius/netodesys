@@ -2,7 +2,7 @@ import abc
 import itertools as it
 
 import sympy as sym
-from paramnet import Parametrized
+from paramnet import Parametrized, ParametrizedMeta
 from pyodesys.native import native_sys
 from pyodesys.symbolic import SymbolicSys
 from sympy import flatten
@@ -14,6 +14,7 @@ from netodesys.views import VarView
 __all__ = []
 __all__.extend([
     'Dynamical',
+    'DynamicalMeta'
 ])
 
 
@@ -34,7 +35,25 @@ def sym_getter(var_name):
     return fget
 
 
-class Dynamical(Parametrized, is_abstract=True, metaclass=abc.ABCMeta):
+class DynamicalMeta(ParametrizedMeta, abc.ABCMeta):
+
+    def __new__(mcs, name, bases, attrs, vars=None, *args, **kwargs):
+        return super().__new__(mcs, name, bases, attrs, *args, **kwargs)
+
+    def __init__(cls, name, bases, attrs, vars=None, *args, **kwargs):
+        super().__init__(name, bases, attrs, *args, **kwargs)
+
+        if vars is None:
+            vars = ['x']
+
+        vars = tuple(vars)
+        cls._vars = vars
+
+        for var in vars:
+            setattr(cls, var, property(sym_getter(var)))
+
+
+class Dynamical(Parametrized, metaclass=DynamicalMeta, vars=None):
     _node = NodeDict()
     _adj = AdjlistOuterDict()
     _pred = AdjlistOuterDict()
@@ -48,28 +67,12 @@ class Dynamical(Parametrized, is_abstract=True, metaclass=abc.ABCMeta):
         self._stale_dynamics = True
         self._native_sys = None
 
-    def __init_subclass__(cls, vars=None, is_abstract=False, **kwargs):
-        super().__init_subclass__(is_abstract=is_abstract, **kwargs)
-
-        if is_abstract:
-            return
-
-        if vars is None:
-            vars = ['x']
-
-        vars = tuple(vars)
-        cls._vars = vars
-
-        for var in vars:
-            if hasattr(cls, var):
-                raise AttributeError(f"Attribute for symbolic variable {var} "
-                                     f"conflicts with existing attr for class"
-                                     f"{cls.__name__}.")
-
-            setattr(cls, var, property(sym_getter(var)))
-
     def expire_dynamics(self):
         self._stale_dynamics = True
+
+    @abc.abstractmethod
+    def rhs(self):
+        pass
 
     @property
     def t(self):
@@ -92,10 +95,6 @@ class Dynamical(Parametrized, is_abstract=True, metaclass=abc.ABCMeta):
     @property
     def stale_dynamics(self):
         return self._stale_dynamics
-
-    @abc.abstractmethod
-    def rhs(self):
-        pass
 
     @uses_dynamics
     def f(self, t, y):
