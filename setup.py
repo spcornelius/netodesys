@@ -39,7 +39,7 @@ if __name__ == '__main__':
         author_email="spcornelius@gmail.com",
         license=license,
         packages=[pkg_name],
-        install_requires=['networkx>=2.0', 'pyodesys', 'paramnet>=1.2.0'],
+        install_requires=['networkx>=2.0', 'pyodesys', 'paramnet>=2.0.0'],
         extras_require=extras_req,
         python_requires='>=3.6',
         classifiers=classifiers)
