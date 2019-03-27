@@ -128,6 +128,11 @@ class Dynamical(Parametrized, metaclass=DynamicalMeta, vars=None):
                 "rhs must map either nodes to rhs or variables to rhs")
 
         dep_expr = [(d, e + Zero()) for d, e in zip(dep, expr)]
+        if any(expr == sym.nan for _, expr in dep_expr):
+            raise ValueError(
+                "At least one rhs expression is NaN. Missing parameters?"
+            )
+
         self._sys = SymbolicSys(dep_expr, self.t)
         if self.use_native:
             self._native_sys = native_sys[self.integrator].from_other(
