@@ -1,5 +1,5 @@
-import paramnet.dict as pd
 import abc
+from collections.abc import MutableMapping
 
 __all__ = []
 
@@ -36,23 +36,59 @@ class DictMeta(abc.ABCMeta):
         return super().__call__(*args, **kwargs)
 
 
-class Dict(pd.Dict, metaclass=DictMeta):
+class Dict(MutableMapping, metaclass=DictMeta):
+    """ base nested dictionary class that tracks changes """
+
+    def __init__(self, data=None, instance=None):
+        self._data = data
+        self._instance = instance
+
+    def __setitem__(self, key, value):
+        if isinstance(value, MutableMapping) and self._child_cls is not None:
+            value = self.__class__(data=value, instance=self._instance)
+        self._data[key] = value
+
+    def __getitem__(self, key):
+        return self._data[key]
+
+    def __delitem__(self, key):
+        del self._data[key]
+
+    def __iter__(self):
+        return iter(self._data)
+
+    def __len__(self):
+        return len(self._data)
+
+    def __getattr__(self, attr):
+        return getattr(self._data, attr)
+
+
+class AttrDict(Dict):
+    _child_cls = None
+
+
+class OuterDict(Dict):
+
+    def __set_name__(self, owner, name):
+        self._name = name
+
+    def __get__(self, instance, owner):
+        if instance is None:
+            return self
+        else:
+            return instance.__dict__[self._name]
+
+    def __set__(self, instance, value):
+        instance.__dict__[self._name] = self.__class__(data=value,
+                                                       instance=instance)
+
+
+class NodeAttrDict(AttrDict):
     pass
 
 
-class AttrDict(Dict, pd.AttrDict):
-    pass
-
-
-class OuterDict(Dict, pd.OuterDict):
-    pass
-
-
-class NodeAttrDict(AttrDict, pd.NodeAttrDict):
-    pass
-
-
-class EdgeAttrDict(AttrDict, pd.EdgeAttrDict):
+class EdgeAttrDict(AttrDict):
     pass
 
 
