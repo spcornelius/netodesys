@@ -10,9 +10,6 @@ from .util import exprs_equal, check_combo, integrators, ChangesDynamics
 classes = [NodewiseSISNet, VarwiseSISNet, TermwiseSISNet]
 
 
-# classes = [NodewiseSISNet]
-
-
 @pytest.mark.parametrize("cls", classes)
 def test_definition(cls):
     net = cls()
