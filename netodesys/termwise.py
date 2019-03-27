@@ -3,15 +3,18 @@ import abc
 import networkx as nx
 import numpy as np
 
-from netodesys.dynamical import Dynamical
+from netodesys.dynamical import Dynamical, DynamicalMeta
 
 __all__ = []
 __all__.extend([
     'TermwiseDynamical',
+    'TermwiseDynamicalMeta',
+    'TermwiseDirected',
+    'TermwiseUndirected'
 ])
 
 
-class TermwiseDynamicalMeta(abc.ABCMeta):
+class TermwiseDynamicalMeta(DynamicalMeta):
 
     def __new__(mcs, name, bases, attrs, **kwargs):
 
@@ -54,8 +57,7 @@ class TermwiseDirected(object):
             yield u, eq
 
 
-class TermwiseDynamical(Dynamical, is_abstract=True,
-                        metaclass=TermwiseDynamicalMeta):
+class TermwiseDynamical(Dynamical, metaclass=TermwiseDynamicalMeta):
 
     @abc.abstractmethod
     def node_term(self, u):
@@ -65,4 +67,3 @@ class TermwiseDynamical(Dynamical, is_abstract=True,
     def source_term(self, u, v):
         """ symbolic expression for the term corresponding to the edge
             u (<)---> v in the dynamics of u"""
-
