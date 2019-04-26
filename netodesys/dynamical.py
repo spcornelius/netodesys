@@ -56,7 +56,7 @@ class Dynamical(Parametrized, metaclass=DynamicalMeta, vars=None):
     _adj = AdjlistOuterDict()
     _pred = AdjlistOuterDict()
 
-    def __init__(self, integrator=None, use_native=False, *args, **kwargs):
+    def __init__(self, *args, integrator=None, use_native=False, **kwargs):
         super().__init__(*args, **kwargs)
         self.use_native = use_native
         self.integrator = integrator
