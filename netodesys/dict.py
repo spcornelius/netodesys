@@ -8,6 +8,7 @@ __all__.extend([
     'DictMeta',
     'OuterDict',
     'AttrDict',
+    'GraphAttrDict',
     'NodeDict',
     'NodeAttrDict',
     'AdjlistOuterDict',
@@ -90,6 +91,10 @@ class NodeAttrDict(AttrDict):
 
 
 class EdgeAttrDict(AttrDict):
+    pass
+
+
+class GraphAttrDict(AttrDict):
     pass
 
 
