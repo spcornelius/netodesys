@@ -2,6 +2,7 @@ import networkx as nx
 import numpy as np
 
 from netodesys import Dynamical, TermwiseDynamical
+from paramnet import Parametrized
 
 __all__ = []
 __all__.extend([
@@ -11,14 +12,18 @@ __all__.extend([
 ])
 
 
-class LVMixin(object):
-    e = 0.1
+class LVBase(Parametrized, nx.DiGraph, node_params=['r', 'K'],
+             graph_params=['e']):
+
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        self.e = 0.1
 
     def is_basal(self, node):
         return set((self.successors(node))) <= set((node,))
 
 
-class NodewiseLVNet(LVMixin, Dynamical, nx.DiGraph, node_params=['r', 'K']):
+class NodewiseLVNet(Dynamical, LVBase):
 
     def rhs(self):
         x = self.x
@@ -30,7 +35,7 @@ class NodewiseLVNet(LVMixin, Dynamical, nx.DiGraph, node_params=['r', 'K']):
             yield u, eq
 
 
-class VarwiseLVNet(LVMixin, Dynamical, nx.DiGraph, node_params=['r', 'K']):
+class VarwiseLVNet(Dynamical, LVBase):
 
     def rhs(self):
         x = self.x
@@ -41,8 +46,7 @@ class VarwiseLVNet(LVMixin, Dynamical, nx.DiGraph, node_params=['r', 'K']):
         yield 'x', x * (r * (1 - x / K) + np.dot(A, x))
 
 
-class TermwiseLVNet(LVMixin, TermwiseDynamical, nx.DiGraph,
-                    node_params=['r', 'K']):
+class TermwiseLVNet(TermwiseDynamical, LVBase):
 
     def node_term(self, u):
         x = self.x[u]
