@@ -86,15 +86,15 @@ class OuterDict(Dict):
                                                        instance=instance)
 
 
+class GraphAttrDict(OuterDict):
+    pass
+
+
 class NodeAttrDict(AttrDict):
     pass
 
 
 class EdgeAttrDict(AttrDict):
-    pass
-
-
-class GraphAttrDict(AttrDict):
     pass
 
 
