@@ -38,24 +38,21 @@ def sym_getter(var_name):
 class DynamicalMeta(ParametrizedMeta, abc.ABCMeta):
 
     def __new__(mcs, name, bases, attrs, vars=None, *args, **kwargs):
-        return super().__new__(mcs, name, bases, attrs, *args, **kwargs)
-
-    def __init__(cls, name, bases, attrs, vars=None, *args, **kwargs):
-        super().__init__(name, bases, attrs, *args, **kwargs)
-
         if vars is None:
             vars = ['x']
 
-        vars = tuple(vars)
-        cls._vars = vars
-
+        # make getters for all variables
         for var in vars:
-            setattr(cls, var, property(sym_getter(var)))
+            attrs[var] = property(sym_getter(var))
+
+        # save ORDERED list of variable names as well
+        attrs['_vars'] = tuple(vars)
+        return super().__new__(mcs, name, bases, attrs, *args, **kwargs)
 
 
 class Dynamical(Parametrized, metaclass=DynamicalMeta, vars=None):
+    graph = GraphAttrDict()
     _node = NodeDict()
-    _graph = GraphAttrDict()
     _adj = AdjlistOuterDict()
     _pred = AdjlistOuterDict()
 
