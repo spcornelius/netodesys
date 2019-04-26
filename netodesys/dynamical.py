@@ -8,7 +8,7 @@ from pyodesys.symbolic import SymbolicSys
 from sympy import flatten
 from sympy.core.numbers import Zero
 
-from netodesys.dict import NodeDict, AdjlistOuterDict
+from netodesys.dict import NodeDict, AdjlistOuterDict, GraphAttrDict
 from netodesys.views import VarView
 
 __all__ = []
@@ -55,6 +55,7 @@ class DynamicalMeta(ParametrizedMeta, abc.ABCMeta):
 
 class Dynamical(Parametrized, metaclass=DynamicalMeta, vars=None):
     _node = NodeDict()
+    _graph = GraphAttrDict()
     _adj = AdjlistOuterDict()
     _pred = AdjlistOuterDict()
 
