@@ -29,11 +29,11 @@ def modifies_dynamics(method):
 
 class DictMeta(abc.ABCMeta):
 
-    def __call__(cls, *args, **kwargs):
+    def __init__(cls, name, bases, attrs, *args, **kwargs):
+        super().__init__(name, bases, attrs, *args, **kwargs)
         # wrap all methods that change the dictionary with above callback
         for m in _mutating_methods:
             setattr(cls, m, modifies_dynamics(getattr(cls, m)))
-        return super().__call__(*args, **kwargs)
 
 
 class Dict(MutableMapping, metaclass=DictMeta):
