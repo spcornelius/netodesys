@@ -47,6 +47,9 @@ def test_updates(cls):
         net.K[1] = 2.0
 
     with ChangesDynamics(net):
+        net.e = 0.15
+
+    with ChangesDynamics(net):
         net.remove_node(1)
 
 
