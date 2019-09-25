@@ -17,10 +17,10 @@ _delegated_mms = ['add', 'contains', 'copy', 'deepcopy', 'eq',
                   'rtruediv', 'sizeof', 'str', 'sub', 'truediv']
 
 
-def delegated_to_numpy(method_name):
+def delegate_to_numpy(method):
     def wrapped(self, *args, **kwargs):
         arr = self.array
-        return getattr(arr, method_name)(*args, **kwargs)
+        return getattr(arr, method)(*args, **kwargs)
 
     return wrapped
 
@@ -42,7 +42,7 @@ class ViewMeta(abc.ABCMeta):
         super().__init__(name, bases, attrs)
         for mm in _delegated_mms:
             mm = f"__{mm}__"
-            setattr(cls, mm, delegated_to_numpy(mm))
+            setattr(cls, mm, delegate_to_numpy(mm))
 
 
 class View(object, metaclass=ViewMeta):
